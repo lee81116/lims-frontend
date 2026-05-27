@@ -1,8 +1,32 @@
-FROM nginx:1.27-alpine
+FROM node:22-alpine AS deps
+WORKDIR /app
 
-COPY nginx/templates /etc/nginx/templates
-COPY . /usr/share/nginx/html
+COPY package.json package-lock.json ./
+RUN npm ci
 
-RUN sed -i "s|http://localhost:8000/api|/api|g" /usr/share/nginx/html/LIMS_0-8-1.dev.html
+FROM node:22-alpine AS builder
+WORKDIR /app
 
-EXPOSE 80
+ARG NEXT_PUBLIC_API_BASE_URL=http://140.113.216.47:8000/api
+ARG NEXT_PUBLIC_REALTIME_URL=http://140.113.216.47:8000/api/realtime
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
+    NEXT_PUBLIC_REALTIME_URL=$NEXT_PUBLIC_REALTIME_URL
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    HOSTNAME=140.113.216.47 \
+    PORT=3000
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

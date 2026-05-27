@@ -1,0 +1,54 @@
+"use client"
+
+import type { Route } from "@/components/lims/shell"
+import { LabDashboard } from "@/components/lims/pages/lab/dashboard"
+import { LabSamples } from "@/components/lims/pages/lab/samples"
+import { LabWaferDetail } from "@/components/lims/pages/lab/wafer-detail"
+import { LabWIP } from "@/components/lims/pages/lab/wip"
+import { LabWipDetail } from "@/components/lims/pages/lab/wip-detail"
+import { LabDispatches } from "@/components/lims/pages/lab/dispatches"
+import { LabDispatchDetail } from "@/components/lims/pages/lab/dispatch-detail"
+import { LabEquipment } from "@/components/lims/pages/lab/equipment"
+import { NotificationsPage } from "@/components/lims/pages/notifications"
+
+interface LabFeatureProps {
+  route: Route
+  navigate: (route: Route) => void
+  canManage?: boolean
+}
+
+export function LabFeature({ route, navigate, canManage = false }: LabFeatureProps) {
+  if (route.page === 'lab_samples' || route.page === 'samples' || route.page === 'lab_sample_new') {
+    return <LabSamples navigate={navigate} tab={route.page === 'lab_sample_new' ? 'incoming' : route.tab || 'all'} />
+  }
+
+  if (route.page === 'lab_wafer') {
+    return <LabWaferDetail id={route.id} navigate={navigate} />
+  }
+
+  if (route.page === 'lab_wip' || route.page === 'wip') {
+    return <LabWIP navigate={navigate} />
+  }
+
+  if (route.page === 'lab_wip_detail') {
+    return <LabWipDetail id={route.id} navigate={navigate} />
+  }
+
+  if (route.page === 'lab_dispatches' || route.page === 'dispatches') {
+    return <LabDispatches navigate={navigate} tab={route.tab || 'active'} />
+  }
+
+  if (route.page === 'lab_dispatch_detail') {
+    return <LabDispatchDetail id={route.id} navigate={navigate} />
+  }
+
+  if (route.page === 'lab_equipment' || route.page === 'equipment') {
+    return <LabEquipment navigate={navigate} canManage={canManage} />
+  }
+
+  if (route.page === 'lab_notifications' || route.page === 'notifications') {
+    return <NotificationsPage />
+  }
+
+  return <LabDashboard navigate={navigate} />
+}

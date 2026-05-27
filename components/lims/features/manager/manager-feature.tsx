@@ -1,0 +1,48 @@
+"use client"
+
+import type { Route } from "@/components/lims/shell"
+import { MgrDashboard } from "@/components/lims/pages/mgr/dashboard"
+import { MgrAllRequests } from "@/components/lims/pages/mgr/all-requests"
+import { MgrRequestDetail } from "@/components/lims/pages/mgr/request-detail"
+import { MgrRecipes } from "@/components/lims/pages/mgr/recipes"
+import { MgrEquipment } from "@/components/lims/pages/mgr/equipment"
+import { MgrReports } from "@/components/lims/pages/mgr/reports"
+import { MgrAccounts } from "@/components/lims/pages/mgr/accounts"
+import { NotificationsPage } from "@/components/lims/pages/notifications"
+
+interface ManagerFeatureProps {
+  route: Route
+  navigate: (route: Route) => void
+}
+
+export function ManagerFeature({ route, navigate }: ManagerFeatureProps) {
+  if (route.page === 'mgr_all_requests') {
+    return <MgrAllRequests navigate={navigate} initialFilter={route.tab || 'all'} />
+  }
+
+  if (route.page === 'mgr_request') {
+    return <MgrRequestDetail id={route.id} navigate={navigate} />
+  }
+
+  if (route.page === 'mgr_recipes') {
+    return <MgrRecipes />
+  }
+
+  if (route.page === 'mgr_equipment') {
+    return <MgrEquipment />
+  }
+
+  if (route.page === 'mgr_reports') {
+    return <MgrReports />
+  }
+
+  if (route.page === 'mgr_accounts') {
+    return <MgrAccounts />
+  }
+
+  if (route.page === 'mgr_notifications') {
+    return <NotificationsPage />
+  }
+
+  return <MgrDashboard navigate={navigate} />
+}
